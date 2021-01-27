@@ -46,7 +46,7 @@ click **Translate** to start translating.
 
 Pre-requisites: access to a terminal, Yarn, nodejs, npm, and gulp.
 
-If yarn is not yet installed, the instruction [here](https://classic.yarnpkg.com/en/docs/install#debian-stable) can be followed to carry out the installation of yarn, afterward install nodejs via package manager [here](https://nodejs.org/en/download/package-manager/) ( if not already installed) this is in-order to get updates. To install the gulp package, run the code below in your terminal, which also downloads other nodejs dependencies:
+If yarn is not yet installed, the instruction [here](https://classic.yarnpkg.com/en/docs/install#debian-stable) can be followed to carry out the installation of yarn, afterward install nodejs via package manager [here](https://nodejs.org/en/download/package-manager/) ( if not already installed) this is in order to get updates. To install the gulp package, run the code below in your terminal, which also downloads other nodejs dependencies:
 
 ```
 Sudo apt -get install gulp
