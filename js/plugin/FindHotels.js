@@ -49,8 +49,7 @@ BR.FindHotels = L.Control.extend({
         this.editTools = map.editTools;
 
         function circleClick(e) {
-            this.editTools = map.editTools = circle.toggleEdit();
-            //this.editTools = map.editTools;
+            circle.toggleEdit();
         }
 
         /*  var editTools = (this.editTools = new BR.Heditable(map, {
@@ -157,6 +156,7 @@ BR.FindHotels = L.Control.extend({
             'editable:enable',
             function (e) {
                 e.layer.setStyle(this.editStyle);
+                this._fireUpdate();
                 console.log('enabled');
             },
             this
@@ -165,6 +165,7 @@ BR.FindHotels = L.Control.extend({
             'editable:disable',
             function (e) {
                 e.layer.setStyle(this.style);
+                this._fireUpdate();
             },
             this
         );
@@ -228,6 +229,12 @@ BR.FindHotels = L.Control.extend({
 
     _fireUpdate: function () {
         console.log('fire update');
+        // check if button is enabled and disable it.
+        var buttonState = this.button.state();
+        // state is either Diabled or Enabled
+        if (buttonState === 'Enabled') {
+            this.button.state('Disabled');
+        }
 
         //this.fire('update', { options: this.getOptions() });
     },
