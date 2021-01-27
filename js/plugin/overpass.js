@@ -18,28 +18,6 @@ BR.Overpass = function (map) {
     // == public methods ==
 
     this.init = function () {
-        // register mapcss extensions
-        /* own MapCSS-extension:
-         * added symbol-* properties
-         * TODO: implement symbol-shape = marker|square?|shield?|...
-         */
-        styleparser.PointStyle.prototype.properties.push(
-            'symbol_shape',
-            'symbol_size',
-            'symbol_stroke_width',
-            'symbol_stroke_color',
-            'symbol_stroke_opacity',
-            'symbol_fill_color',
-            'symbol_fill_opacity'
-        );
-        styleparser.PointStyle.prototype.symbol_shape = '';
-        styleparser.PointStyle.prototype.symbol_size = NaN;
-        styleparser.PointStyle.prototype.symbol_stroke_width = NaN;
-        styleparser.PointStyle.prototype.symbol_stroke_color = null;
-        styleparser.PointStyle.prototype.symbol_stroke_opacity = NaN;
-        styleparser.PointStyle.prototype.symbol_fill_color = null;
-        styleparser.PointStyle.prototype.symbol_fill_opacity = NaN;
-
         // prepare some Leaflet hacks
         originalGeom2Layer = L.GeoJSON.geometryToLayer;
     };
@@ -99,21 +77,6 @@ BR.Overpass = function (map) {
                                 data = $.parseJSON(data);
                             } catch (e) {}
                         }
-                        // hacky firefox hack :( (it is not properly detecting xml from the content-type header)
-                        if (
-                            typeof data == 'string' &&
-                            data.substr(0, 5) == '<?xml' &&
-                            jqXHR.status === 200 &&
-                            !(jqXHR.getResponseHeader('content-type') || '').match(/text\/html/) &&
-                            data.match(/<osm/)
-                        ) {
-                            try {
-                                jqXHR.responseXML = data;
-                                data = $.parseXML(data);
-                            } catch (e) {
-                                delete jqXHR.responseXML;
-                            }
-                        }
 
                         // continue after firefox hack
                         if (
@@ -157,11 +120,6 @@ BR.Overpass = function (map) {
                                 console.log('Overpass API error', fullerrmsg || errmsg); // write (full) error message to console for easier debugging
                                 fire('onQueryError', errmsg);
                                 data_mode = 'error';
-                                // parse errors and highlight error lines
-                                // var errlines = errmsg.match(/line \d+:/g) || [];
-                                // for (var i = 0; i < errlines.length; i++) {
-                                //   fire('onQueryErrorLine', 1 * errlines[i].match(/\d+/)[0]);
-                                //}
                             }
                             // the html error message returned by overpass API looks goods also in xml mode ^^
                             this.resultType = 'error';
@@ -214,7 +172,12 @@ BR.Overpass = function (map) {
                                 icon: 'hotel',
                                 markerColor: 'green',
                             });
+                            // check if map has hotels already
+                            if (BR.hotelGeojson && map.hasLayer(BR.hotelGeojson)) {
+                                map.removeLayer(BR.hotelGeojson);
+                            }
                             // Adds geojson to global scope
+
                             BR.hotelGeojson = L.geoJSON(geojson, {
                                 pointToLayer: function (pointFeature, latlng) {
                                     return L.marker(latlng, {
@@ -224,8 +187,34 @@ BR.Overpass = function (map) {
                             })
                                 .bindPopup(function (layer) {
                                     console.log(layer.feature.properties);
-                                    var content = layer.feature.properties;
-                                    return JSON.stringify(content);
+                                    var properties = layer.feature.properties;
+
+                                    //var content = (function (objArg) {
+                                    var table = document.createElement('TABLE');
+                                    var header = document.createElement('thead');
+                                    header.innerHTML = `<tr><th>key</th><th>value</th></tr>`;
+                                    var body = document.createElement('tbody');
+
+                                    for (var [i, j] of Object.entries(properties)) {
+                                        var row = document.createElement('tr');
+                                        var key = document.createElement('td');
+                                        var value = document.createElement('td');
+
+                                        key.innerText = i;
+                                        value.innerText = j;
+                                        row.appendChild(key);
+                                        row.appendChild(value);
+
+                                        body.appendChild(row);
+                                    }
+
+                                    table.appendChild(header);
+                                    table.appendChild(body);
+
+                                    console.log(table);
+                                    // })(properties);
+
+                                    return table;
                                 })
                                 .addTo(map);
                             // Add geojson to map
@@ -340,37 +329,10 @@ BR.Overpass = function (map) {
         ).appendTo('#map');
     };
     this.handlers['onDataRecieved'] = function (amount, amount_txt, abortCB, continueCB) {
-        if (amount > 1000000) {
+        if (amount > 4000000) {
             BR.Waiter.close();
-            var _originalDocumentTitle = document.title;
-            document.title = '❗ ' + _originalDocumentTitle;
-            // more than ~1MB of data
-            // show warning dialog
-            var dialog_buttons = [
-                {
-                    name: i18n.t('dialog.abort'),
-                    callback: function () {
-                        document.title = _originalDocumentTitle;
-                        abortCB();
-                    },
-                },
-                {
-                    name: i18n.t('dialog.continue_anyway'),
-                    callback: function () {
-                        document.title = _originalDocumentTitle;
-                        continueCB();
-                    },
-                },
-            ];
-
-            var content =
-                '<p>' +
-                i18n.t('warning.huge_data.expl.1').replace('{{amount_txt}}', amount_txt) +
-                '</p><p>' +
-                i18n.t('warning.huge_data.expl.2') +
-                '</p>';
-            showDialog(i18n.t('warning.huge_data.title'), content, dialog_buttons);
-        } else continueCB();
+        }
+        continueCB();
     };
     this.handlers['onAbort'] = function () {
         BR.Waiter.close();
