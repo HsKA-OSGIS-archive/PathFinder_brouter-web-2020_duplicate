@@ -42,6 +42,29 @@ signing up, you can go to [BRouter's project
 page](https://www.transifex.com/openstreetmap/brouter-web/dashboard/), select a language and
 click **Translate** to start translating.
 
+## Preparation
+
+Pre-requisites: access to a terminal, Yarn, nodejs, npm, and gulp.
+
+If yarn is not yet installed, the instruction [here](https://classic.yarnpkg.com/en/docs/install#debian-stable) can be followed to carry out the installation of yarn, afterward install nodejs via package manager [here](https://nodejs.org/en/download/package-manager/) ( if not already installed) this is in-order to get updates. To install the gulp package, run the code below in your terminal, which also downloads other nodejs dependencies:
+
+```
+Sudo apt -get install gulp
+
+Sudo apt upgrade
+```
+
+Lastly install npm using
+```
+
+npm install
+
+```
+
+This resolves all the dependencies of brouter web and installs all depending on packages.
+
+
+
 ## Installation
 
 See [INSTALL.md](INSTALL.md) for guidance on installation.
@@ -137,4 +160,6 @@ Copyright (c) 2018 Norbert Renner and [contributors](https://github.com/nrenner/
 -   [leaflet-distance-markers](https://github.com/adoroszlai/leaflet-distance-markers)  
     Copyright (c) 2014- Doroszlai Attila, 2016- Phil Whitehurst; [MIT License](https://github.com/adoroszlai/leaflet-distance-markers/blob/master/LICENSE.md)
 -   [Leaflet.hotline](https://github.com/iosphere/Leaflet.hotline)  
-    Copyright (c) 2015, iosphere GmbH, Jonas Coch; [Leaflet.hotline](https://github.com/iosphere/Leaflet.hotline/blob/master/LICENSE)
+    Copyright (c) 2015, iosphere GmbH, Jonas Coch; [Leaflet.hotline](https://github.com/iosphere/Leaflet.hotline/blob/master/LICENSE) 
+-   [OSMtogeojson](https://tyrasd.github.io/osmtogeojson/)  
+    Copyright (c) 2013 The MIT License (MIT) , Martin Raifer; [OSMtogeojson](https://tyrasd.github.io/osmtogeojson/)
